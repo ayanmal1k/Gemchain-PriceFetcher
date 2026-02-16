@@ -25,18 +25,30 @@ REQUEST_DELAY = 0.1  # Seconds to wait between individual requests within a batc
 
 def fetch_tokens_from_supabase():
     """
-    Fetch all tokens from the Supabase table.
-    Returns tokens with contract_address populated.
+    Fetch tokens from the Supabase table with filters:
+    - status = 'approved'
+    - token_token = 'launched' or 'presale'
+    - contract_address is populated
     """
     try:
         response = supabase.table("tokens").select("*").execute()
         tokens = response.data
         
-        # Filter tokens with contract addresses
-        tokens_with_contract = [t for t in tokens if t.get("contract_address")]
+        # Filter tokens by:
+        # 1. Has contract address
+        # 2. Status is 'approved'
+        # 3. token_token is either 'launched' or 'presale'
+        filtered_tokens = [
+            t for t in tokens 
+            if t.get("contract_address") 
+            and t.get("status") == "approved"
+            and t.get("token_token") in ("launched", "presale")
+        ]
         
-        print(f"✓ Fetched {len(tokens_with_contract)} tokens with contract addresses from Supabase")
-        return tokens_with_contract
+        print(f"✓ Fetched {len(filtered_tokens)} approved tokens (launched/presale) with contract addresses from Supabase")
+        if len(filtered_tokens) < len(tokens):
+            print(f"  (Filtered from {len(tokens)} total tokens)")
+        return filtered_tokens
     except Exception as e:
         print(f"✗ Error fetching tokens from Supabase: {e}")
         return []
