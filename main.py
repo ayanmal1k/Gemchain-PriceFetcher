@@ -42,7 +42,7 @@ def fetch_tokens_from_supabase():
             t for t in tokens 
             if t.get("contract_address") 
             and t.get("status") == "approved"
-            and t.get("token_token") in ("launched", "presale")
+            and t.get("token_type") in ("launched", "presale")
         ]
         
         print(f"✓ Fetched {len(filtered_tokens)} approved tokens (launched/presale) with contract addresses from Supabase")
@@ -62,7 +62,7 @@ def fetch_price_data_from_dexscreener(contract_address, chain):
         chain: Blockchain chain (ethereum, bsc, polygon, etc.)
     
     Returns:
-        Dictionary with price_1h_change and price_24h_change
+        Dictionary with price_1h_change and price_24h_change and current_price
     """
     try:
         # DexScreener endpoint format
@@ -78,7 +78,16 @@ def fetch_price_data_from_dexscreener(contract_address, chain):
             
             price_1h_change = pair.get("priceChange", {}).get("h1")
             price_24h_change = pair.get("priceChange", {}).get("h24")
-            current_price = float(pair.get("priceUsd", 0)) if pair.get("priceUsd") else None
+            # Keep priceUsd as string to preserve precision for very small decimals
+            # e.g., 0.00000008369 instead of converting to float and losing precision
+            current_price = pair.get("priceUsd")
+            
+            # Only convert to float if we need to validate it's a valid number
+            if current_price:
+                try:
+                    float(current_price)  # Validate it's a valid number
+                except (ValueError, TypeError):
+                    current_price = None
             
             return {
                 "price_1h_change": price_1h_change,
