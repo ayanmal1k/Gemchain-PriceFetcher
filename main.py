@@ -73,7 +73,22 @@ def get_chain_name_for_geckoterminal(chain):
         "arbitrum": "arbitrum",
         "optimism": "optimism",
         "base": "base",
-        "linea": "linea"
+        "linea": "linea",
+        "monad": "monad",
+        "blast": "blast",
+        "ethereumpow": "ethereum-pow",
+        "dogechain": "dogechain",
+        "abstract": "abstract",
+        "xlayer": "xlayer",
+        "filecoin": "filecoin",
+        "ton": "ton",
+        "sui": "sui",
+        "tron": "tron",
+        "xrpl": "xrpl",
+        "core": "core",
+        "shibarium": "shibarium",
+        "aptos": "aptos",
+        "zksync": "zksync"
     }
     return chain_map.get(chain.lower(), chain.lower())
 
