@@ -65,7 +65,7 @@ def write_responses_to_file():
 def get_chain_name_for_geckoterminal(chain):
     chain_map = {
         "ethereum": "ethereum",
-        "bsc": "bsc",
+        "bnb chain": "bsc",
         "polygon": "polygon-pos",
         "solana": "solana",
         "avalanche": "avalanche",
@@ -79,10 +79,10 @@ def get_chain_name_for_geckoterminal(chain):
         "ethereumpow": "ethereum-pow",
         "dogechain": "dogechain",
         "abstract": "abstract",
-        "xlayer": "xlayer",
+        "xlayer": "x-layer",
         "filecoin": "filecoin",
         "ton": "ton",
-        "sui": "sui",
+        "sui": "sui", 
         "tron": "tron",
         "xrpl": "xrpl",
         "core": "core",
@@ -240,8 +240,13 @@ def update_token_in_supabase(token_id, price_data):
         if price_data.get("price_24h_change") is not None:
             update_payload["price_24h_change"] = price_data.get("price_24h_change")
         
-        if price_data.get("current_price") is not None:
-            update_payload["current_price"] = price_data.get("current_price")
+        current_price = price_data.get("current_price")
+        if current_price is not None:
+            try:
+                float(current_price)
+                update_payload["current_price"] = current_price
+            except (ValueError, TypeError):
+                pass
         
         if len(update_payload) > 1:
             supabase.table("tokens").update(update_payload).eq("id", token_id).execute()
