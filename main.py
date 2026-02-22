@@ -118,6 +118,20 @@ def get_pool_address_from_geckoterminal(token_id, token_name, contract_address, 
         price_1h_change = price_change.get("h1")
         price_24h_change = price_change.get("h24")
         
+        market_cap = attributes.get("market_cap_usd")
+        if market_cap:
+            try:
+                market_cap = float(market_cap)
+            except (ValueError, TypeError):
+                market_cap = None
+        
+        liquidity_usd = attributes.get("reserve_in_usd")
+        if liquidity_usd:
+            try:
+                liquidity_usd = float(liquidity_usd)
+            except (ValueError, TypeError):
+                liquidity_usd = None
+        
         return {
             "token_id": token_id,
             "token_name": token_name,
@@ -125,7 +139,9 @@ def get_pool_address_from_geckoterminal(token_id, token_name, contract_address, 
             "chain": chain,
             "price": price,
             "price_1h_change": price_1h_change,
-            "price_24h_change": price_24h_change
+            "price_24h_change": price_24h_change,
+            "market_cap": market_cap,
+            "liquidity": liquidity_usd
         }
         
     except requests.exceptions.RequestException as e:
@@ -140,6 +156,8 @@ def get_price_from_geckoterminal(token_info):
         "price_1h_change": token_info.get("price_1h_change"),
         "price_24h_change": token_info.get("price_24h_change"),
         "current_price": token_info.get("price"),
+        "market_cap": token_info.get("market_cap"),
+        "liquidity": token_info.get("liquidity"),
         "source": "geckoterminal"
     }
 
@@ -215,10 +233,26 @@ def fetch_price_data_from_dexscreener(token_id, token_name, contract_address, ch
                 except (ValueError, TypeError):
                     current_price = None
             
+            market_cap = pair.get("marketCap")
+            if market_cap:
+                try:
+                    market_cap = float(market_cap)
+                except (ValueError, TypeError):
+                    market_cap = None
+            
+            liquidity_usd = pair.get("liquidity", {}).get("usd")
+            if liquidity_usd:
+                try:
+                    liquidity_usd = float(liquidity_usd)
+                except (ValueError, TypeError):
+                    liquidity_usd = None
+            
             return {
                 "price_1h_change": price_1h_change,
                 "price_24h_change": price_24h_change,
                 "current_price": current_price,
+                "market_cap": market_cap,
+                "liquidity": liquidity_usd,
                 "source": "dexscreener"
             }
         else:
@@ -245,6 +279,20 @@ def update_token_in_supabase(token_id, price_data):
             try:
                 float(current_price)
                 update_payload["current_price"] = current_price
+            except (ValueError, TypeError):
+                pass
+        
+        market_cap = price_data.get("market_cap")
+        if market_cap is not None:
+            try:
+                update_payload["market_cap"] = float(market_cap)
+            except (ValueError, TypeError):
+                pass
+        
+        liquidity = price_data.get("liquidity")
+        if liquidity is not None:
+            try:
+                update_payload["liquidity"] = float(liquidity)
             except (ValueError, TypeError):
                 pass
         
