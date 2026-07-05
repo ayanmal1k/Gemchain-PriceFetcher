@@ -88,7 +88,9 @@ def get_chain_name_for_geckoterminal(chain):
         "core": "core",
         "shibarium": "shibarium",
         "aptos": "aptos",
-        "zksync": "zksync"
+        "zksync": "zksync",
+        "robinhood": "robinhood",
+        "robinhood chain": "robinhood"
     }
     return chain_map.get(chain.lower(), chain.lower())
 
@@ -211,7 +213,9 @@ def fetch_price_data_from_dexscreener(token_id, token_name, contract_address, ch
                 "fantom": "fantom",
                 "arbitrum": "arbitrum",
                 "optimism": "optimism",
-                "base": "base"
+                "base": "base",
+                "robinhood": "robinhood",
+                "robinhood chain": "robinhood"
             }
             dex_chain = chain_map.get(chain.lower(), chain.lower())
             

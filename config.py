@@ -28,7 +28,8 @@ SUPPORTED_CHAINS = [
     "fantom",
     "solana",
     "near",
-    "flow"
+    "flow",
+    "robinhood"
 ]
 
 # Table Names
